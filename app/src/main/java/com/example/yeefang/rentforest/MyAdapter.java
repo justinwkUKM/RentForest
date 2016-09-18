@@ -55,6 +55,8 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         holder.txtViewPropertyType.setText(album.getPropertyType());
         holder.txtViewPublicAddress.setText(album.getPublicAddress());
 
+
+
         holder.imgViewIcon.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
@@ -65,6 +67,22 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             }
         });
 
+        holder.setClickListener(new ItemClickListener() {
+            @Override
+            public void onClick(View view, int position, boolean isLongClick) {
+                if (isLongClick) {
+                    Log.e("OnLongClick", "calling");
+                    Toast.makeText(context, "#" +position+" " + album.getName()+
+                            " OnLongClick ", Toast.LENGTH_SHORT).show();
+
+                } else {
+                    Log.e("OnClick", "Clicked View: ");
+                    Toast.makeText(context, "#"+position+" " + album.getName(),
+                            Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
     }
 
     @Override
@@ -72,9 +90,11 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
         return alba.size();
     }
 
-    class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder  implements View.OnClickListener, View.OnLongClickListener {
         public NetworkImageView imgViewIcon;
         public TextView txtViewName, txtViewPrice, txtViewPropertyType, txtViewPublicAddress;
+        private ItemClickListener clickListener;
+
 
         public ViewHolder(View itemLayoutView) {
             super(itemLayoutView);
@@ -84,6 +104,24 @@ public class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {
             txtViewPublicAddress = (TextView) itemLayoutView.findViewById(R.id.item_public_address);
             imgViewIcon = (NetworkImageView) itemLayoutView.findViewById(R.id.item_icon);
             Log.e("ViewHolder", "Constructor Method");
+            itemLayoutView.setTag(itemView);
+            itemLayoutView.setOnClickListener(this);
+            itemLayoutView.setOnLongClickListener(this);
+        }
+
+        public void setClickListener(ItemClickListener itemClickListener) {
+            this.clickListener = itemClickListener;
+        }
+
+        @Override
+        public void onClick(View view) {
+            clickListener.onClick(view, getPosition(), false);
+        }
+
+        @Override
+        public boolean onLongClick(View view) {
+            clickListener.onClick(view, getPosition(), true);
+            return true;
         }
     }
 }
